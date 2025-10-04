@@ -3,143 +3,173 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Doctor Note Generator</title>
+<title>Doctor — Clinical Tools (Protected)</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
+
 <style>
-  :root{--bg:#f7f8fb;--card:#fff;--accent:#1f2937}
-  html,body{height:100%;margin:0;font-family:"Comfortaa",Arial,sans-serif;background:var(--bg);color:#111}
-  .wrap{max-width:980px;margin:18px auto;padding:18px;}
-  .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 20px rgba(15,23,42,0.06);border:1px solid #e6eef8}
-  label{display:block;margin-top:12px;font-weight:700}
-  input, textarea{width:100%; padding:10px; margin-top:6px; border-radius:8px; border:1px solid #d1d5db; font-weight:700; box-sizing:border-box}
-  textarea{min-height:80px; resize:vertical}
-  .controls{display:flex;gap:8px;margin-top:12px}
-  button.primary{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:700}
-  pre#output{background:#fafafa;padding:12px;border-radius:8px;border:1px solid #eee;margin-top:14px;white-space:pre-wrap}
-  .login-wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);z-index:999}
-  .login-card{width:360px;background:var(--card);padding:20px;border-radius:12px;box-shadow:0 12px 40px rgba(2,6,23,0.2)}
-  .login-card h2{text-align:center;margin:0 0 12px;font-size:20px}
+:root{--bg:#f7f8fb;--card:#fff;--muted:#6b7280;--accent:#1f2937}
+html,body{height:100%;margin:0;font-family:"Comfortaa",Arial,sans-serif;background:var(--bg);color:#111}
+.wrap{max-width:980px;margin:18px auto;padding:18px;}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.brand{font-size:20px;font-weight:700;color:var(--accent)}
+.card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 20px rgba(15,23,42,0.06);border:1px solid #e6eef8}
+label{display:block;margin-top:12px;font-weight:700}
+input[type="text"], input[type="number"], input[type="date"], select, textarea {
+  width:100%; padding:10px; margin-top:6px; border-radius:8px; border:1px solid #d1d5db; box-sizing:border-box; font-weight:700;
+}
+textarea{min-height:80px; resize:vertical}
+.row{display:flex;gap:12px}
+.col-1{flex:0 0 120px}
+.col-flex{flex:1}
+.controls{display:flex;gap:8px;margin-top:12px}
+button.primary{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:700}
+button.ghost{background:transparent;border:1px solid #d1d5db;padding:10px 14px;border-radius:8px;cursor:pointer}
+.logout{background:#b33;color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:700}
+pre#output{background:#fafafa;padding:12px;border-radius:8px;border:1px solid #eee;margin-top:14px;white-space:pre-wrap}
+.login-wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);z-index:999}
+.login-card{width:360px;background:var(--card);padding:20px;border-radius:12px;box-shadow:0 12px 40px rgba(2,6,23,0.2)}
+.login-card h2{text-align:center;margin:0 0 12px;font-size:20px}
+.meta{font-size:12px;color:var(--muted);text-align:center;margin-top:8px}
 </style>
 </head>
 <body>
 
-<!-- Login Overlay -->
+<!-- Login -->
 <div id="login" class="login-wrap" aria-hidden="false">
-  <div class="login-card" role="dialog" aria-label="Site login">
+  <div class="login-card">
     <h2>Protected Access</h2>
-    <label>Username</label>
+    <label for="loginUser">Username</label>
     <input id="loginUser" type="text" autocomplete="username" placeholder="Enter username">
-    <label style="margin-top:10px">Password</label>
+    <label for="loginPass" style="margin-top:10px">Password</label>
     <input id="loginPass" type="password" autocomplete="current-password" placeholder="Enter password">
-    <div class="controls" style="margin-top:12px;">
+    <div style="display:flex;gap:8px;margin-top:12px;">
       <button id="loginBtn" class="primary" style="flex:1">Sign in</button>
     </div>
+    <div class="meta">Client-side authentication only.</div>
   </div>
 </div>
 
 <!-- Main App -->
 <div id="app" class="wrap" style="display:none">
+  <div class="topbar">
+    <div class="brand">Doctor — Clinical Tools</div>
+    <button id="logout" class="logout">Log out</button>
+  </div>
+
   <div class="card">
     <h3>Doctor Note Builder</h3>
 
     <label>Patient Name:</label>
     <input type="text" id="patientName" placeholder="Enter patient name">
 
-    <label>Date of Visit:</label>
-    <input type="date" id="visitDate">
-
-    <label>Illness / Diagnosis:</label>
-    <input type="text" id="illness" placeholder="Enter illness or diagnosis">
-
-    <label>Excused From (Start Date):</label>
-    <input type="date" id="startDate">
-
-    <label>Excused Until (End Date):</label>
-    <input type="date" id="endDate">
+    <div class="row">
+      <div class="col-1">
+        <label>Age:</label>
+        <input type="number" id="age" min="0" max="120" placeholder="Age">
+      </div>
+      <div class="col-flex">
+        <label>Date:</label>
+        <input type="date" id="date">
+      </div>
+    </div>
 
     <label>Provider (Name & Credentials):</label>
     <input type="text" id="provider" placeholder="Enter provider name & credentials">
 
+    <label>Illness / Diagnosis:</label>
+    <input type="text" id="illness" placeholder="Enter illness or diagnosis">
+
+    <label>Excuse Start Date:</label>
+    <input type="date" id="startDate">
+
+    <label>Excuse End Date:</label>
+    <input type="date" id="endDate">
+
+    <label>Return Date:</label>
+    <input type="date" id="returnDate">
+
     <div class="controls">
       <button id="generate" class="primary">Generate PDF</button>
-      <button id="preview" class="primary">Preview Text</button>
+      <button id="preview" class="ghost">Preview Text</button>
     </div>
 
     <pre id="output"></pre>
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-/* ----- LOGIN SYSTEM (nmccgsuh only) ----- */
-const ACCOUNTS = { 'nmccgsuh': '15358' };
+const ACCOUNTS = {
+  'nmccgsuh': { pw: '15358', provider: 'Dr. Nicolas McCarthy MD PhD FACS' },
+  'doctor': { pw: 'doctor', provider: null } // manual entry
+};
 
 const loginWrap = document.getElementById('login');
 const loginUser = document.getElementById('loginUser');
 const loginPass = document.getElementById('loginPass');
 const loginBtn = document.getElementById('loginBtn');
+const logoutBtn = document.getElementById('logout');
 const app = document.getElementById('app');
 
-function showLogin(){ loginWrap.style.display='flex'; app.style.display='none'; loginWrap.setAttribute('aria-hidden','false'); loginUser.focus(); }
-function showApp(){ loginWrap.style.display='none'; app.style.display='block'; loginWrap.setAttribute('aria-hidden','true'); }
+function showLogin(){ loginWrap.style.display='flex'; app.style.display='none'; }
+function showAppFor(user){ 
+  loginWrap.style.display='none'; 
+  app.style.display='block'; 
+  const providerField = document.getElementById('provider');
+  if(ACCOUNTS[user].provider) providerField.value = ACCOUNTS[user].provider;
+  else providerField.value = '';
+}
 
 function authenticate(){
   const u = (loginUser.value||'').trim();
   const p = (loginPass.value||'').trim();
-  if(ACCOUNTS[u] && ACCOUNTS[u] === p){
+  if(!u) { alert('Enter username'); return; }
+  if(ACCOUNTS[u] && ACCOUNTS[u].pw === p){
     sessionStorage.setItem('user', u);
     loginUser.value=''; loginPass.value='';
-    showApp();
-  } else { alert('Incorrect username or password.'); }
+    showAppFor(u);
+  } else { alert('Incorrect username or password'); }
 }
 
 loginBtn.addEventListener('click', authenticate);
-loginPass.addEventListener('keydown', e=>{ if(e.key==='Enter') authenticate(); });
-loginUser.addEventListener('keydown', e=>{ if(e.key==='Enter') loginPass.focus(); });
+loginPass.addEventListener('keydown', (e)=>{ if(e.key==='Enter') authenticate(); });
 
-if(sessionStorage.getItem('user')==='nmccgsuh'){ showApp(); } else { showLogin(); }
+logoutBtn.addEventListener('click', ()=>{
+  sessionStorage.removeItem('user');
+  showLogin();
+});
 
-/* ----- UTILITY ----- */
-function formatDate(input){
-  if(!input) return "[MM-DD-YYYY]";
-  const d = new Date(input);
-  const mm = String(d.getMonth()+1).padStart(2,'0');
-  const dd = String(d.getDate()).padStart(2,'0');
-  const yyyy = d.getFullYear();
-  return `${mm}-${dd}-${yyyy}`;
-}
+if(sessionStorage.getItem('user')) showAppFor(sessionStorage.getItem('user'));
 
 function buildNote(){
-  const name = document.getElementById('patientName').value || "[Patient Name]";
-  const visit = formatDate(document.getElementById('visitDate').value);
-  const illness = document.getElementById('illness').value || "[Illness/Diagnosis]";
-  const start = formatDate(document.getElementById('startDate').value);
-  const end = formatDate(document.getElementById('endDate').value);
-  const provider = document.getElementById('provider').value || "Dr. [Name], MD";
+  const name = document.getElementById('patientName').value || "[Name]";
+  const age = document.getElementById('age').value || "[Age]";
+  const date = document.getElementById('date').value || "[MM-DD-YYYY]";
+  const provider = document.getElementById('provider').value || "[Provider]";
+  const illness = document.getElementById('illness').value || "[Illness]";
+  const start = document.getElementById('startDate').value || "[MM-DD-YYYY]";
+  const end = document.getElementById('endDate').value || "[MM-DD-YYYY]";
+  const ret = document.getElementById('returnDate').value || "[MM-DD-YYYY]";
 
-  return `I, ${provider}, am writing this note to inform you that I have seen ${name} in my hospital on the day of ${visit}.
-
-Testing revealed ${name} has ${illness} and as ${name}'s healthcare provider I am recommending for ${name} to be excused from SCHOOL/WORK from the dates of ${start} - ${end}, allowing ${name} to return on ${end}.
-
-If you require any additional information do not hesitate to contact me. Thank you for understanding.
-
-Sincerely,
-${provider}`;
+  return `I, ${provider}, am writing this note to inform you that I have seen ${name} in my hospital on the day of ${date}.\n\nTesting revealed ${name} has ${illness} and as ${name}'s healthcare provider I am recommending for ${name} to be excused from SCHOOL/WORK from the dates of ${start} - ${end} allowing ${name} to return on ${ret}.\n\nSincerely,\n${provider}`;
 }
 
-/* ----- EVENTS ----- */
 document.getElementById('preview').addEventListener('click', ()=>{
   document.getElementById('output').textContent = buildNote();
 });
 
 document.getElementById('generate').addEventListener('click', ()=>{
+  const note = buildNote();
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
-  const note = buildNote();
-  const lines = doc.splitTextToSize(note, 180);
-  doc.text(lines, 12, 12);
-  doc.save('Doctor_Note.pdf');
+  doc.setFont("Helvetica","bold");
+  doc.setFontSize(12);
+  doc.text(note, 12, 12, {maxWidth:180});
+  const safeName = (document.getElementById('patientName').value||"note").replace(/[^a-z0-9_\-]/gi,'_');
+  doc.save(`Doctor_Note_${safeName}.pdf`);
 });
 </script>
+
 </body>
 </html>
