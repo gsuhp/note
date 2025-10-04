@@ -3,208 +3,143 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Doctor Note Builder</title>
-
-<!-- jsPDF -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-<!-- Comfortaa for page display -->
+<title>Doctor Note Generator</title>
 <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
-
 <style>
-  :root{--bg:#f7f8fb;--card:#fff;--muted:#6b7280;--accent:#1f2937}
+  :root{--bg:#f7f8fb;--card:#fff;--accent:#1f2937}
   html,body{height:100%;margin:0;font-family:"Comfortaa",Arial,sans-serif;background:var(--bg);color:#111}
   .wrap{max-width:980px;margin:18px auto;padding:18px;}
-  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
-  .brand{font-size:20px;font-weight:700;color:var(--accent)}
-  .nav{display:flex;gap:8px}
-  .nav button{background:transparent;border:1px solid transparent;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:700}
-  .nav button.active{background:var(--accent);color:#fff}
   .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 20px rgba(15,23,42,0.06);border:1px solid #e6eef8}
   label{display:block;margin-top:12px;font-weight:700}
-  input[type="text"], input[type="number"], input[type="date"], select, textarea {
-    width:100%; padding:10px; margin-top:6px; border-radius:8px; border:1px solid #d1d5db; box-sizing:border-box; font-weight:700;
-  }
+  input, textarea{width:100%; padding:10px; margin-top:6px; border-radius:8px; border:1px solid #d1d5db; font-weight:700; box-sizing:border-box}
   textarea{min-height:80px; resize:vertical}
-  .row{display:flex;gap:12px}
-  .col-1{flex:0 0 120px}
-  .col-flex{flex:1}
-  .small{font-size:12px;color:var(--muted);margin-left:6px;font-weight:400}
   .controls{display:flex;gap:8px;margin-top:12px}
   button.primary{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:700}
-  button.ghost{background:transparent;border:1px solid #d1d5db;padding:10px 14px;border-radius:8px;cursor:pointer}
-  .logout{background:#b33;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}
   pre#output{background:#fafafa;padding:12px;border-radius:8px;border:1px solid #eee;margin-top:14px;white-space:pre-wrap}
   .login-wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);z-index:999}
   .login-card{width:360px;background:var(--card);padding:20px;border-radius:12px;box-shadow:0 12px 40px rgba(2,6,23,0.2)}
   .login-card h2{text-align:center;margin:0 0 12px;font-size:20px}
-  .meta{font-size:12px;color:var(--muted);text-align:center;margin-top:8px}
-  @media (max-width:760px){ .row{flex-direction:column} .col-1{flex:auto} }
-  a.linkish{color:var(--accent);text-decoration:underline;cursor:pointer;font-weight:700}
 </style>
 </head>
 <body>
-  <!-- Login overlay -->
-  <div id="login" class="login-wrap" aria-hidden="false">
-    <div class="login-card" role="dialog" aria-label="Site login">
-      <h2>Protected Access</h2>
 
-      <label for="loginUser">Username</label>
-      <input id="loginUser" type="text" autocomplete="username" placeholder="Enter username">
-
-      <label for="loginPass" style="margin-top:10px">Password</label>
-      <input id="loginPass" type="password" autocomplete="current-password" placeholder="Enter password">
-
-      <div style="display:flex;gap:8px;margin-top:12px;">
-        <button id="loginBtn" class="primary" style="flex:1">Sign in</button>
-      </div>
-
-      <div style="display:flex;justify-content:space-between;margin-top:10px;align-items:center">
-        <div class="meta">Client-side authentication only.</div>
-      </div>
+<!-- Login Overlay -->
+<div id="login" class="login-wrap" aria-hidden="false">
+  <div class="login-card" role="dialog" aria-label="Site login">
+    <h2>Protected Access</h2>
+    <label>Username</label>
+    <input id="loginUser" type="text" autocomplete="username" placeholder="Enter username">
+    <label style="margin-top:10px">Password</label>
+    <input id="loginPass" type="password" autocomplete="current-password" placeholder="Enter password">
+    <div class="controls" style="margin-top:12px;">
+      <button id="loginBtn" class="primary" style="flex:1">Sign in</button>
     </div>
   </div>
+</div>
 
-  <!-- Main App -->
-  <div id="app" class="wrap" style="display:none">
-    <div class="topbar">
-      <div class="brand">Doctor Note Builder</div>
-      <div style="display:flex;align-items:center;gap:12px">
-        <button id="logout" class="logout">Log out</button>
-      </div>
+<!-- Main App -->
+<div id="app" class="wrap" style="display:none">
+  <div class="card">
+    <h3>Doctor Note Builder</h3>
+
+    <label>Patient Name:</label>
+    <input type="text" id="patientName" placeholder="Enter patient name">
+
+    <label>Date of Visit:</label>
+    <input type="date" id="visitDate">
+
+    <label>Illness / Diagnosis:</label>
+    <input type="text" id="illness" placeholder="Enter illness or diagnosis">
+
+    <label>Excused From (Start Date):</label>
+    <input type="date" id="startDate">
+
+    <label>Excused Until (End Date):</label>
+    <input type="date" id="endDate">
+
+    <label>Provider (Name & Credentials):</label>
+    <input type="text" id="provider" placeholder="Enter provider name & credentials">
+
+    <div class="controls">
+      <button id="generate" class="primary">Generate PDF</button>
+      <button id="preview" class="primary">Preview Text</button>
     </div>
 
-    <div id="noteCard" class="card" aria-hidden="false">
-      <h3 style="margin:0 0 6px">Doctor Note</h3>
-
-      <label>Patient Name:</label>
-      <input type="text" id="note_patientName" placeholder="Enter patient name">
-
-      <div class="row" style="margin-top:6px">
-        <div class="col-1">
-          <label>Date of Visit:</label>
-          <input type="date" id="note_date">
-        </div>
-        <div class="col-flex">
-          <label>Illness / Condition:</label>
-          <input type="text" id="note_illness" placeholder="Enter illness">
-        </div>
-      </div>
-
-      <div class="row" style="margin-top:6px">
-        <div class="col-1">
-          <label>Start Date:</label>
-          <input type="date" id="note_start">
-        </div>
-        <div class="col-1">
-          <label>End Date:</label>
-          <input type="date" id="note_end">
-        </div>
-        <div class="col-1">
-          <label>Return Date:</label>
-          <input type="date" id="note_return">
-        </div>
-      </div>
-
-      <label>Provider (Name & Credentials):</label>
-      <input type="text" id="note_provider" placeholder="Enter provider name & credentials">
-
-      <div class="controls" style="margin-top:12px">
-        <button id="note_generate" class="primary">Generate PDF</button>
-        <button id="note_preview" class="ghost">Preview Text</button>
-      </div>
-
-      <pre id="note_output"></pre>
-    </div>
+    <pre id="output"></pre>
   </div>
+</div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-const ACCOUNTS = {
-  'nmccgsuh': '15358',
-  'physician': 'physician'
-};
+/* ----- LOGIN SYSTEM (nmccgsuh only) ----- */
+const ACCOUNTS = { 'nmccgsuh': '15358' };
 
-function showLogin(){ 
-  document.getElementById('login').style.display='flex'; 
-  document.getElementById('app').style.display='none'; 
-  document.getElementById('login').setAttribute('aria-hidden','false'); 
-  document.getElementById('loginUser').focus(); 
-}
-function showApp(){ 
-  document.getElementById('login').style.display='none'; 
-  document.getElementById('app').style.display='block'; 
-  document.getElementById('login').setAttribute('aria-hidden','true'); 
-}
+const loginWrap = document.getElementById('login');
+const loginUser = document.getElementById('loginUser');
+const loginPass = document.getElementById('loginPass');
+const loginBtn = document.getElementById('loginBtn');
+const app = document.getElementById('app');
+
+function showLogin(){ loginWrap.style.display='flex'; app.style.display='none'; loginWrap.setAttribute('aria-hidden','false'); loginUser.focus(); }
+function showApp(){ loginWrap.style.display='none'; app.style.display='block'; loginWrap.setAttribute('aria-hidden','true'); }
 
 function authenticate(){
-  const u = (document.getElementById('loginUser').value||'').trim();
-  const p = (document.getElementById('loginPass').value||'').trim();
-  if (ACCOUNTS[u] && ACCOUNTS[u] === p){
-    sessionStorage.setItem('doctor_user', u);
-    document.getElementById('loginUser').value='';
-    document.getElementById('loginPass').value='';
+  const u = (loginUser.value||'').trim();
+  const p = (loginPass.value||'').trim();
+  if(ACCOUNTS[u] && ACCOUNTS[u] === p){
+    sessionStorage.setItem('user', u);
+    loginUser.value=''; loginPass.value='';
     showApp();
-    // autofill provider for nmccgsuh
-    if(u==='nmccgsuh') document.getElementById('note_provider').value='Dr. Nicolas McCarthy MD PhD FACS';
-  } else {
-    alert('Incorrect username or password.');
-  }
+  } else { alert('Incorrect username or password.'); }
 }
 
-document.getElementById('loginBtn').addEventListener('click', authenticate);
-document.getElementById('loginPass').addEventListener('keydown', (e)=>{ if(e.key==='Enter') authenticate(); });
-document.getElementById('loginUser').addEventListener('keydown', (e)=>{ if(e.key==='Enter') document.getElementById('loginPass').focus(); });
+loginBtn.addEventListener('click', authenticate);
+loginPass.addEventListener('keydown', e=>{ if(e.key==='Enter') authenticate(); });
+loginUser.addEventListener('keydown', e=>{ if(e.key==='Enter') loginPass.focus(); });
 
-document.getElementById('logout').addEventListener('click', ()=>{
-  sessionStorage.removeItem('doctor_user');
-  showLogin();
-});
+if(sessionStorage.getItem('user')==='nmccgsuh'){ showApp(); } else { showLogin(); }
 
-function writeNoteToPDF(doc, noteText, filenamePrefix) {
-  doc.setFontSize(12);
-  let y = 12;
-  const lineHeight = 7;
-  const leftMargin = 12;
-  noteText.split("\n").forEach(line => {
-    const wrapped = doc.splitTextToSize(line, 180);
-    doc.text(wrapped, leftMargin, y);
-    y += lineHeight * wrapped.length;
-    if (y > 280) { doc.addPage(); y = 12; }
-  });
-  const safe = filenamePrefix.replace(/[^a-z0-9_\-]/gi,'_').slice(0,40) || 'note';
-  doc.save(safe+'.pdf');
+/* ----- UTILITY ----- */
+function formatDate(input){
+  if(!input) return "[MM-DD-YYYY]";
+  const d = new Date(input);
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  const yyyy = d.getFullYear();
+  return `${mm}-${dd}-${yyyy}`;
 }
 
-function generateNote(){
-  const name = document.getElementById('note_patientName').value || "[Name/ID]";
-  const date = document.getElementById('note_date').value || new Date().toLocaleDateString();
-  const illness = document.getElementById('note_illness').value || "[Illness]";
-  const start = document.getElementById('note_start').value || date;
-  const end = document.getElementById('note_end').value || date;
-  const ret = document.getElementById('note_return').value || end;
-  const provider = document.getElementById('note_provider').value || "Dr. [Name], MD";
+function buildNote(){
+  const name = document.getElementById('patientName').value || "[Patient Name]";
+  const visit = formatDate(document.getElementById('visitDate').value);
+  const illness = document.getElementById('illness').value || "[Illness/Diagnosis]";
+  const start = formatDate(document.getElementById('startDate').value);
+  const end = formatDate(document.getElementById('endDate').value);
+  const provider = document.getElementById('provider').value || "Dr. [Name], MD";
 
-  const note = 
-`I, ${provider}, am writing this note to inform you that I have seen ${name} in my hospital on the day of ${date}.
+  return `I, ${provider}, am writing this note to inform you that I have seen ${name} in my hospital on the day of ${visit}.
 
-Testing revealed ${name} has ${illness} and as ${name}'s healthcare provider I am recommending for ${name} to be excused from SCHOOL/WORK from the dates of ${start} - ${end} allowing ${name} to return on ${ret}.
+Testing revealed ${name} has ${illness} and as ${name}'s healthcare provider I am recommending for ${name} to be excused from SCHOOL/WORK from the dates of ${start} - ${end}, allowing ${name} to return on ${end}.
 
 If you require any additional information do not hesitate to contact me. Thank you for understanding.
+
 Sincerely,
 ${provider}`;
-
-  document.getElementById('note_output').textContent = note;
-
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  writeNoteToPDF(doc, note, 'Doctor_Note_'+name+'_'+date);
 }
 
-document.getElementById('note_generate').addEventListener('click', generateNote);
-document.getElementById('note_preview').addEventListener('click', generateNote);
+/* ----- EVENTS ----- */
+document.getElementById('preview').addEventListener('click', ()=>{
+  document.getElementById('output').textContent = buildNote();
+});
 
-// Initialize
-if(sessionStorage.getItem('doctor_user')) showApp(); else showLogin();
+document.getElementById('generate').addEventListener('click', ()=>{
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const note = buildNote();
+  const lines = doc.splitTextToSize(note, 180);
+  doc.text(lines, 12, 12);
+  doc.save('Doctor_Note.pdf');
+});
 </script>
 </body>
 </html>
