@@ -101,7 +101,7 @@ document.getElementById('generateBtn').addEventListener('click', ()=>{
   const ret = document.getElementById('returnDate').value || "[Return Date]";
   const provider = document.getElementById('provider').value || "Dr. [Name]";
 
-  const noteText = `I, ${provider}, am writing this note to inform you that I have seen ${name} in my hospital on the day of ${start}.\n\nTesting revealed ${name} has ${illness} and as ${name}'s healthcare provider I am recommending for ${name} to be excused from SCHOOL/WORK from the dates of ${start} - ${end} allowing ${name} to return on ${ret}.\n\nIf you require any additional information do not hesitate to contact me at (631) 379-7125. Thank you for understanding.\n\nSincerely,\n${provider}`;
+  const noteText = `I, ${provider}, am writing this note to inform you that I have seen ${name} in my hospital on the day of ${start}.\n\nTesting revealed ${name} has ${illness} and as ${name}'s healthcare provider I am recommending for ${name} to be excused from SCHOOL/WORK from the dates of ${start} - ${end} allowing ${name} to return on ${ret}.\n\nIf you require any additional information do not hesitate to contact me, thank you for understanding.\n\nSincerely,\n${provider}`;
 
   document.getElementById('output').textContent = noteText;
 
