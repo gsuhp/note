@@ -3,42 +3,59 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Doctor — Clinical Tools (Protected)</title>
+<title>Clinical Tools For Education</title>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
+<!-- jsPDF (UMD) -->
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
 <style>
-:root{--bg:#f7f8fb;--card:#fff;--muted:#6b7280;--accent:#1f2937}
-html,body{height:100%;margin:0;font-family:"Comfortaa",Arial,sans-serif;background:var(--bg);color:#111}
-.wrap{max-width:980px;margin:18px auto;padding:18px;}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
-.brand{font-size:20px;font-weight:700;color:var(--accent)}
-.card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 20px rgba(15,23,42,0.06);border:1px solid #e6eef8}
-label{display:block;margin-top:12px;font-weight:700}
-input[type="text"], input[type="number"], input[type="date"], select, textarea {
-  width:100%; padding:10px; margin-top:6px; border-radius:8px; border:1px solid #d1d5db; box-sizing:border-box; font-weight:700;
-}
-textarea{min-height:80px; resize:vertical}
-.row{display:flex;gap:12px}
-.col-1{flex:0 0 120px}
-.col-flex{flex:1}
-.controls{display:flex;gap:8px;margin-top:12px}
-button.primary{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:700}
-button.ghost{background:transparent;border:1px solid #d1d5db;padding:10px 14px;border-radius:8px;cursor:pointer}
-.logout{background:#b33;color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:700}
-pre#output{background:#fafafa;padding:12px;border-radius:8px;border:1px solid #eee;margin-top:14px;white-space:pre-wrap}
-.login-wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);z-index:999}
-.login-card{width:360px;background:var(--card);padding:20px;border-radius:12px;box-shadow:0 12px 40px rgba(2,6,23,0.2)}
-.login-card h2{text-align:center;margin:0 0 12px;font-size:20px}
-.meta{font-size:12px;color:var(--muted);text-align:center;margin-top:8px}
+  :root{--bg:#f7f8fb;--card:#fff;--muted:#6b7280;--accent:#1f2937}
+  html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:#111}
+  .wrap{max-width:980px;margin:18px auto;padding:18px;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+  .brand{font-size:20px;font-weight:700;color:var(--accent)}
+  .nav{display:flex;gap:8px}
+  .nav button{background:transparent;border:1px solid transparent;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:700}
+  .nav button.active{background:var(--accent);color:#fff}
+  .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 20px rgba(15,23,42,0.06);border:1px solid #e6eef8}
+  label{display:block;margin-top:12px;font-weight:700}
+  input[type="text"], input[type="number"], input[type="date"], select, textarea {
+    width:100%; padding:10px; margin-top:6px; border-radius:8px; border:1px solid #d1d5db; box-sizing:border-box; font-weight:700;
+  }
+  textarea{min-height:80px; resize:vertical}
+  .row{display:flex;gap:12px}
+  .col-1{flex:0 0 120px}
+  .col-flex{flex:1}
+  .small{font-size:12px;color:var(--muted);margin-left:6px;font-weight:400}
+  .controls{display:flex;gap:8px;margin-top:12px}
+  button.primary{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:700}
+  button.ghost{background:transparent;border:1px solid #d1d5db;padding:10px 14px;border-radius:8px;cursor:pointer}
+  .logout{background:#b33;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}
+  pre#output{background:#fafafa;padding:12px;border-radius:8px;border:1px solid #eee;margin-top:14px;white-space:pre-wrap}
+  .login-wrap, .disclaimer-wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);z-index:999}
+  .login-card, .disclaimer-card{width:360px;background:var(--card);padding:20px;border-radius:12px;box-shadow:0 12px 40px rgba(2,6,23,0.2)}
+  .login-card h2,.disclaimer-card h2{text-align:center;margin:0 0 12px;font-size:18px}
+  .meta{font-size:12px;color:var(--muted);text-align:center;margin-top:8px}
+  @media (max-width:760px){ .row{flex-direction:column} .col-1{flex:auto} }
+  a.linkish{color:var(--accent);text-decoration:underline;cursor:pointer;font-weight:700}
 </style>
 </head>
 <body>
 
-<!-- Login -->
-<div id="login" class="login-wrap" aria-hidden="false">
-  <div class="login-card">
+<!-- DISCLAIMER -->
+<div id="disclaimer" class="disclaimer-wrap" aria-hidden="false">
+  <div class="disclaimer-card" role="dialog" aria-label="Disclaimer">
+    <h2>Disclaimer — Educational Use Only</h2>
+    <p style="margin:8px 0 12px">This site is for educational / roleplay purposes only. Do not enter real patient-identifiable information (PHI). No data is sent to any server — authentication and storage are client-side only.</p>
+    <div style="display:flex;gap:8px">
+      <button id="acceptDisclaimer" class="primary" style="flex:1">I Understand — Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN (hidden until disclaimer accepted) -->
+<div id="login" class="login-wrap" aria-hidden="true" style="display:none">
+  <div class="login-card" role="dialog" aria-label="Site login">
     <h2>Protected Access</h2>
     <label for="loginUser">Username</label>
     <input id="loginUser" type="text" autocomplete="username" placeholder="Enter username">
@@ -47,128 +64,315 @@ pre#output{background:#fafafa;padding:12px;border-radius:8px;border:1px solid #e
     <div style="display:flex;gap:8px;margin-top:12px;">
       <button id="loginBtn" class="primary" style="flex:1">Sign in</button>
     </div>
-    <div class="meta">Client-side authentication only.</div>
+    <div style="display:flex;justify-content:space-between;margin-top:10px;align-items:center">
+      <div class="meta">Client-side authentication only.</div>
+      <a id="forgotLink" class="linkish" aria-label="Forgot password">Forgot?</a>
+    </div>
   </div>
 </div>
 
-<!-- Main App -->
+<!-- APP -->
 <div id="app" class="wrap" style="display:none">
   <div class="topbar">
-    <div class="brand">Doctor — Clinical Tools</div>
-    <button id="logout" class="logout">Log out</button>
+    <div class="brand">Clinical Tools For Education</div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="nav" role="navigation" aria-label="Form switch">
+        <button id="btnGAD" class="active">GAD-7</button>
+        <button id="btnPHQ">PHQ-A</button>
+        <button id="btnDoctor">Doctor's Note</button>
+        <button id="btnHospital">Hospital Visit</button>
+      </div>
+      <button id="logout" class="logout">Log out</button>
+    </div>
   </div>
 
-  <div class="card">
-    <h3>Doctor Note Builder</h3>
+  <!-- GAD -->
+  <div id="gadCard" class="card" aria-hidden="false">
+    <!-- existing GAD content -->
+  </div>
 
-    <label>Patient Name:</label>
-    <input type="text" id="patientName" placeholder="Enter patient name">
+  <!-- PHQ -->
+  <div id="phqCard" class="card" style="margin-top:18px;display:none" aria-hidden="true">
+    <!-- existing PHQ content -->
+  </div>
 
+  <!-- Doctor Note -->
+  <div id="doctorCard" class="card" style="margin-top:18px;display:none" aria-hidden="true">
+    <!-- existing Doctor Note content -->
+  </div>
+
+  <!-- Hospital Visit Summary -->
+  <div id="hospitalCard" class="card" style="margin-top:18px;display:none" aria-hidden="true">
+    <h3 style="margin:0 0 6px">Hospital Visit Summary</h3>
+
+    <label>Name:</label>
+    <input type="text" id="hosp_name" placeholder="Patient Name">
+    <label>DOB:</label>
+    <input type="date" id="hosp_dob">
+    <label>Gender Identity:</label>
+    <input type="text" id="hosp_gender" placeholder="Gender Identity">
+    <label>Scheduled Visits:</label>
+    <input type="text" id="hosp_scheduled">
+    <label>Date of Last Physical:</label>
+    <input type="date" id="hosp_lastPhysical">
+    <label>Visit Summary for Doctor:</label>
+    <input type="text" id="hosp_doctor">
+    <label>Reason for Visit:</label>
+    <textarea id="hosp_reason"></textarea>
+
+    <h4>Vitals</h4>
     <div class="row">
-      <div class="col-1">
-        <label>Age:</label>
-        <input type="number" id="age" min="0" max="120" placeholder="Age">
-      </div>
-      <div class="col-flex">
-        <label>Date:</label>
-        <input type="date" id="date">
-      </div>
+      <div class="col-1"><label>Height:</label><input type="text" id="hosp_height"></div>
+      <div class="col-1"><label>Weight:</label><input type="text" id="hosp_weight"></div>
+      <div class="col-1"><label>Temperature:</label><input type="text" id="hosp_temp"></div>
+    </div>
+    <div class="row">
+      <div class="col-1"><label>Blood Pressure:</label><input type="text" id="hosp_bp"></div>
+      <div class="col-1"><label>Pulse:</label><input type="text" id="hosp_pulse"></div>
+      <div class="col-1"><label>Respiration:</label><input type="text" id="hosp_resp"></div>
     </div>
 
-    <label>Provider (Name & Credentials):</label>
-    <input type="text" id="provider" placeholder="Enter provider name & credentials">
+    <h4>Labs</h4>
+    <label>Status:</label>
+    <input type="text" id="hosp_labStatus" placeholder="Completed / Pending">
+    <label>Result:</label>
+    <input type="text" id="hosp_labResult1" placeholder="Result 1">
+    <label>Facility:</label>
+    <input type="text" id="hosp_labFacility1" value="Grey Sloan University Laboratory">
+    <label>Result:</label>
+    <input type="text" id="hosp_labResult2" placeholder="Result 2">
+    <label>Facility:</label>
+    <input type="text" id="hosp_labFacility2" value="Grey Sloan University Laboratory">
 
-    <label>Illness / Diagnosis:</label>
-    <input type="text" id="illness" placeholder="Enter illness or diagnosis">
+    <label>Plan:</label>
+    <textarea id="hosp_plan"></textarea>
+    <label>Diagnosis:</label>
+    <textarea id="hosp_diag">Based on the clinical evaluation and available investigations, the patient’s condition has been thoroughly assessed. Appropriate diagnosis has been made, and a management plan has been outlined accordingly.</textarea>
 
-    <label>Excuse Start Date:</label>
-    <input type="date" id="startDate">
-
-    <label>Excuse End Date:</label>
-    <input type="date" id="endDate">
-
-    <label>Return Date:</label>
-    <input type="date" id="returnDate">
-
-    <div class="controls">
-      <button id="generate" class="primary">Generate PDF</button>
-      <button id="preview" class="ghost">Preview Text</button>
+    <div class="controls" style="margin-top:12px">
+      <button id="hosp_generate" class="primary">Generate PDF</button>
+      <button id="hosp_preview" class="ghost">Preview Text</button>
     </div>
-
-    <pre id="output"></pre>
+    <pre id="hosp_output"></pre>
   </div>
+
 </div>
 
 <script>
+/* ---------- Accounts & Access ---------- */
 const ACCOUNTS = {
-  'nmccgsuh': { pw: '15358', provider: 'Dr. Nicolas McCarthy MD PhD FACS' },
-  'doctor': { pw: 'doctor', provider: null } // manual entry
+  'nmccgsuh': { pw:'15358', provider: 'Dr. Nicolas McCarthy MD PhD FACS', access: {gad:true, phq:true, doc:true, hospital:true} },
+  'mjohn':    { pw:'mj15358', provider: 'Dr. Martha Johnson DO', access: {gad:true, phq:true, doc:true, hospital:true} },
+  'psych':    { pw:'psychgsuh', provider: null, access: {gad:true, phq:true, doc:false, hospital:false} },
+  'doctor':   { pw:'doctor', provider: null, access: {gad:false, phq:false, doc:true, hospital:true} }
 };
+const FORGOT_CODE = 'gsuhdoctor';
 
+/* ----- Elements ----- */
+const disclaimer = document.getElementById('disclaimer');
+const acceptDisclaimer = document.getElementById('acceptDisclaimer');
 const loginWrap = document.getElementById('login');
 const loginUser = document.getElementById('loginUser');
 const loginPass = document.getElementById('loginPass');
 const loginBtn = document.getElementById('loginBtn');
-const logoutBtn = document.getElementById('logout');
+const forgotLink = document.getElementById('forgotLink');
 const app = document.getElementById('app');
+const logoutBtn = document.getElementById('logout');
 
-function showLogin(){ loginWrap.style.display='flex'; app.style.display='none'; }
-function showAppFor(user){ 
-  loginWrap.style.display='none'; 
-  app.style.display='block'; 
-  const providerField = document.getElementById('provider');
-  if(ACCOUNTS[user].provider) providerField.value = ACCOUNTS[user].provider;
-  else providerField.value = '';
+const btnGAD = document.getElementById('btnGAD');
+const btnPHQ = document.getElementById('btnPHQ');
+const btnDoctor = document.getElementById('btnDoctor');
+const btnHospital = document.getElementById('btnHospital');
+
+const gadCard = document.getElementById('gadCard');
+const phqCard = document.getElementById('phqCard');
+const doctorCard = document.getElementById('doctorCard');
+const hospitalCard = document.getElementById('hospitalCard');
+
+/* ----- Disclaimer flow ----- */
+acceptDisclaimer.addEventListener('click', ()=>{
+  disclaimer.style.display = 'none';
+  loginWrap.style.display = 'flex';
+  loginWrap.setAttribute('aria-hidden','false');
+  loginUser.focus();
+});
+
+/* ----- Login / Session ----- */
+function showLogin(){ loginWrap.style.display='flex'; app.style.display='none'; loginWrap.setAttribute('aria-hidden','false'); loginUser.focus(); }
+function showAppFor(user){
+  loginWrap.style.display='none'; app.style.display='block'; loginWrap.setAttribute('aria-hidden','true');
+  const access = ACCOUNTS[user].access;
+  btnGAD.style.display = access.gad ? 'inline-block' : 'none';
+  btnPHQ.style.display = access.phq ? 'inline-block' : 'none';
+  btnDoctor.style.display = access.doc ? 'inline-block' : 'none';
+  btnHospital.style.display = access.hospital ? 'inline-block' : 'none';
+  if(access.gad) selectTab('gad');
+  else if(access.phq) selectTab('phq');
+  else if(access.doc) selectTab('doc');
+  else if(access.hospital) selectTab('hospital');
+  autofillProviderFor(user);
 }
 
 function authenticate(){
   const u = (loginUser.value||'').trim();
   const p = (loginPass.value||'').trim();
-  if(!u) { alert('Enter username'); return; }
-  if(ACCOUNTS[u] && ACCOUNTS[u].pw === p){
-    sessionStorage.setItem('user', u);
+  if(!u){ alert('Enter username'); loginUser.focus(); return; }
+  const acct = ACCOUNTS[u];
+  if(acct && acct.pw === p){
+    sessionStorage.setItem('psych_user', u);
     loginUser.value=''; loginPass.value='';
     showAppFor(u);
-  } else { alert('Incorrect username or password'); }
+  } else {
+    alert('Incorrect username or password.');
+  }
 }
 
+function forgotFlow(){
+  const u = (loginUser.value||'').trim();
+  if(!u){ alert('Enter username first'); loginUser.focus(); return; }
+  if(!ACCOUNTS[u]){ alert('Unknown username'); return; }
+  const ans = prompt('Code?');
+  if(ans === null) return;
+  if(ans === FORGOT_CODE){
+    sessionStorage.setItem('psych_user', u);
+    loginUser.value=''; loginPass.value='';
+    showAppFor(u);
+  } else alert('Incorrect code.');
+}
+
+function autofillProviderFor(username){
+  const mapping = ACCOUNTS[username];
+  if(!mapping) return;
+  const prov = mapping.provider;
+  const gprov = document.getElementById('gad_provider');
+  const pprov = document.getElementById('phq_provider');
+  const dprov = document.getElementById('doc_provider');
+  if(prov){
+    if(gprov) gprov.value = prov;
+    if(pprov) pprov.value = prov;
+    if(dprov) dprov.value = prov;
+  } else {
+    if(gprov) gprov.value = '';
+    if(pprov) pprov.value = '';
+    if(dprov) dprov.value = '';
+  }
+}
+
+// Event wiring
 loginBtn.addEventListener('click', authenticate);
-loginPass.addEventListener('keydown', (e)=>{ if(e.key==='Enter') authenticate(); });
+forgotLink.addEventListener('click', forgotFlow);
+loginPass.addEventListener('keydown', e=>{ if(e.key==='Enter') authenticate(); });
+loginUser.addEventListener('keydown', e=>{ if(e.key==='Enter') loginPass.focus(); });
 
 logoutBtn.addEventListener('click', ()=>{
-  sessionStorage.removeItem('user');
+  sessionStorage.removeItem('psych_user');
   showLogin();
 });
 
-if(sessionStorage.getItem('user')) showAppFor(sessionStorage.getItem('user'));
+/* ----- Tabs ----- */
+function selectTab(which){
+  btnGAD.classList.remove('active'); 
+  btnPHQ.classList.remove('active'); 
+  btnDoctor.classList.remove('active'); 
+  btnHospital.classList.remove('active');
 
-function buildNote(){
-  const name = document.getElementById('patientName').value || "[Name]";
-  const age = document.getElementById('age').value || "[Age]";
-  const date = document.getElementById('date').value || "[MM-DD-YYYY]";
-  const provider = document.getElementById('provider').value || "[Provider]";
-  const illness = document.getElementById('illness').value || "[Illness]";
-  const start = document.getElementById('startDate').value || "[MM-DD-YYYY]";
-  const end = document.getElementById('endDate').value || "[MM-DD-YYYY]";
-  const ret = document.getElementById('returnDate').value || "[MM-DD-YYYY]";
+  gadCard.style.display='none'; 
+  phqCard.style.display='none'; 
+  doctorCard.style.display='none'; 
+  hospitalCard.style.display='none';
 
-  return `I, ${provider}, am writing this note to inform you that I have seen ${name} in my hospital on the day of ${date}.\n\nTesting revealed ${name} has ${illness} and as ${name}'s healthcare provider I am recommending for ${name} to be excused from SCHOOL/WORK from the dates of ${start} - ${end} allowing ${name} to return on ${ret}.\n\nSincerely,\n${provider}`;
+  if(which==='gad'){ btnGAD.classList.add('active'); gadCard.style.display='block'; }
+  if(which==='phq'){ btnPHQ.classList.add('active'); phqCard.style.display='block'; }
+  if(which==='doc'){ btnDoctor.classList.add('active'); doctorCard.style.display='block'; }
+  if(which==='hospital'){ btnHospital.classList.add('active'); hospitalCard.style.display='block'; }
+}
+btnGAD.addEventListener('click', ()=> selectTab('gad'));
+btnPHQ.addEventListener('click', ()=> selectTab('phq'));
+btnDoctor.addEventListener('click', ()=> selectTab('doc'));
+btnHospital.addEventListener('click', ()=> selectTab('hospital'));
+
+/* ----- PDF helper ----- */
+function writeNoteToPDF(doc, noteText, filenamePrefix){
+  doc.setFontSize(12);
+  let y = 12;
+  const lineHeight = 7;
+  const leftMargin = 12;
+  noteText.split("\n").forEach(line=>{
+    const wrapped = doc.splitTextToSize(line, 180);
+    doc.text(wrapped, leftMargin, y);
+    y += lineHeight * wrapped.length;
+    if(y > 280){ doc.addPage(); y = 12; }
+  });
+  const safe = filenamePrefix.replace(/[^a-z0-9_\-]/gi,'_').slice(0,40) || 'note';
+  doc.save(`${safe}.pdf`);
 }
 
-document.getElementById('preview').addEventListener('click', ()=>{
-  document.getElementById('output').textContent = buildNote();
+/* ----- Hospital Visit PDF / Preview ----- */
+function getHospitalNote(){
+  const name = document.getElementById('hosp_name').value || "[Name]";
+  const dob = document.getElementById('hosp_dob').value || "[DOB]";
+  const gender = document.getElementById('hosp_gender').value || "[Gender]";
+  const scheduled = document.getElementById('hosp_scheduled').value || "[Scheduled Visits]";
+  const lastPhysical = document.getElementById('hosp_lastPhysical').value || "[Last Physical]";
+  const doctor = document.getElementById('hosp_doctor').value || "[Doctor]";
+  const reason = document.getElementById('hosp_reason').value || "[Reason for Visit]";
+  const height = document.getElementById('hosp_height').value || "[Height]";
+  const weight = document.getElementById('hosp_weight').value || "[Weight]";
+  const temp = document.getElementById('hosp_temp').value || "[Temp]";
+  const bp = document.getElementById('hosp_bp').value || "[BP]";
+  const pulse = document.getElementById('hosp_pulse').value || "[Pulse]";
+  const resp = document.getElementById('hosp_resp').value || "[Respiration]";
+  const labStatus = document.getElementById('hosp_labStatus').value || "[Lab Status]";
+  const labR1 = document.getElementById('hosp_labResult1').value || "[Result1]";
+  const labF1 = document.getElementById('hosp_labFacility1').value || "[Facility1]";
+  const labR2 = document.getElementById('hosp_labResult2').value || "[Result2]";
+  const labF2 = document.getElementById('hosp_labFacility2').value || "[Facility2]";
+  const plan = document.getElementById('hosp_plan').value || "[Plan]";
+  const diag = document.getElementById('hosp_diag').value || "[Diagnosis]";
+  
+  return `
+Hospital Visit Summary
+====================
+Name: ${name}
+DOB: ${dob}
+Gender Identity: ${gender}
+Scheduled Visits: ${scheduled}
+Date of Last Physical: ${lastPhysical}
+Visit Summary for Doctor: ${doctor}
+Reason for Visit: ${reason}
+
+Vitals:
+Height: ${height} | Weight: ${weight} | Temperature: ${temp}
+Blood Pressure: ${bp} | Pulse: ${pulse} | Respiration: ${resp}
+
+Labs:
+Status: ${labStatus}
+Result1: ${labR1} | Facility: ${labF1}
+Result2: ${labR2} | Facility: ${labF2}
+
+Diagnosis:
+${diag}
+
+Plan:
+${plan}
+  `.trim();
+}
+
+document.getElementById('hosp_preview').addEventListener('click', ()=>{
+  const note = getHospitalNote();
+  document.getElementById('hosp_output').textContent = note;
 });
 
-document.getElementById('generate').addEventListener('click', ()=>{
-  const note = buildNote();
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  doc.setFont("Helvetica","bold");
-  doc.setFontSize(12);
-  doc.text(note, 12, 12, {maxWidth:180});
-  const safeName = (document.getElementById('patientName').value||"note").replace(/[^a-z0-9_\-]/gi,'_');
-  doc.save(`Doctor_Note_${safeName}.pdf`);
+document.getElementById('hosp_generate').addEventListener('click', ()=>{
+  const doc = new jspdf.jsPDF();
+  writeNoteToPDF(doc, getHospitalNote(), "Hospital_Visit");
 });
+
+/* ----- Restore session if exists ----- */
+const savedUser = sessionStorage.getItem('psych_user');
+if(savedUser && ACCOUNTS[savedUser]) showAppFor(savedUser);
+else showLogin();
+
 </script>
 
 </body>
